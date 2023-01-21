@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/smoothness/jquery-ui.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+
+    <title>Document</title>
+    
+</head>
+<style>
+    body
+{
+font-family:Arial;
+font-size : 10pt;
+padding:5px;
+}
+
+.Highlighted a{
+background-image :none !important;
+color: red !important;
+font-weight:bold !important;
+font-size: 12pt;
+}
+</style>
+<body style="text-align: center;">
+    <h1 id="d">New Date</h1>
+
+    <input type='text' id='txtDate' />
+    <button>Submit</button>
+ 
+    <script>
+        $(document).ready(function() {
+
+    var array = ["04-01-2023","08-01-2023","16-01-2023","23-01-2023"];
+
+    $('#txtDate').datepicker({
+            beforeShowDay: function(date) {
+            var string = jQuery.datepicker.formatDate('dd-mm-yy', date);
+            return [array.indexOf(string) == -1]
+        }
+    });
+});
+    </script>
+
+</body>
+</html>
