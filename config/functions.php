@@ -8,6 +8,14 @@ function post($data) {
 //Account registration
 function register($register_license,$register_surname,$register_firstname,$register_middlename,$register_email,$register_contact,$register_username,$register_password,$user_type) {
     global $db;
+
+    $Upgrade = "";
+    if($user_type == "Macro"){
+        $Upgrade = 2;
+    }else{
+        $Upgrade = 0;
+    }
+
     $checker = $db->query("SELECT * FROM accounts WHERE email = '$register_email'");
     if($checker->num_rows > 0) {
         echo "<script>
@@ -16,7 +24,7 @@ alert('Email already exists');
     } else {
         $requirement  = $_FILES['requirement']['name'];
         $location = $user_type == 'Customer' ? 'license' : 'permit';
-        $db->query("INSERT INTO accounts (license,surname,firstname,middlename,email,contact,username,password,user_type,requirement) VALUES ('$register_license','$register_surname','$register_firstname','$register_middlename','$register_email','$register_contact','$register_username','$register_password','$user_type','$requirement')");
+        $db->query("INSERT INTO accounts (license,surname,firstname,middlename,email,contact,username,password,user_type,Upgrade,requirement) VALUES ('$register_license','$register_surname','$register_firstname','$register_middlename','$register_email','$register_contact','$register_username','$register_password','$user_type','$Upgrade','$requirement')");
         move_uploaded_file($_FILES['requirement']['tmp_name'],'images/'.$location.'/'.$_FILES['requirement']['name']);
         echo "<script src='https://unpkg.com/sweetalert/dist/sweetalert.min.js'></script>";
         echo"
@@ -140,6 +148,25 @@ function get_account_details($id) {
     global $db;
     return $db->query("SELECT * FROM accounts WHERE id = $id")->fetch_assoc();
 }
+function getProofCredits($id) {
+    global $db;
+    $result= $db->query("SELECT proof FROM credits WHERE customer_id = $id")->fetch_assoc();
+    return $result['proof'];
+}
+function get_chat_reference($id) {
+    global $db;
+    $query1 = $db->query("SELECT `reference` FROM chat WHERE CustomerID = $id");
+    $result = mysqli_fetch_assoc($query1);
+    return $result['reference'];
+}
+
+function create_chat_to_admin($ref,$id) {
+    global $db;
+    $query = $db->query("SELECT firstname, middlename,surname FROM accounts WHERE id='$id'");
+    $result = mysqli_fetch_assoc($query);
+    $fullname = $result['firstname']." ".$result['middlename']." ".$result['surname'];
+    return $db->query("INSERT INTO chat (reference,CustomerID,sender,receiver,message) VALUES ('$ref','$id','$fullname','Administrator','Thank you for contacting us. How may I help you?')");
+}
 //customer profile
 function update_profile($license,$surname,$firstname,$middlename,$email,$contact) {
     global $db;
@@ -236,19 +263,27 @@ function admin_update_to_macro($userid, $UpgradeNo, $userType) {
         return true;
     }
 }
-function buy_credits($userid,$fname,$cp,$cred,$dayName,$proof) {
+function buy_credits($referenceNumber,$userid,$fname,$cp,$cred,$utype,$dayName,$proof) {
     global $db;
-    $query = $db->query("INSERT INTO credits (customer_id,fullname,cellphone,amount,c_dayName,proof) VALUES ('$userid','$fname','$cp','$cred','$dayName','$proof')");
+    $query = $db->query("INSERT INTO credits (referenceNumber,customer_id,fullname,cellphone,amount,AccountType,c_dayName,proof) VALUES ('$referenceNumber','$userid','$fname','$cp','$cred','$utype','$dayName','$proof')");
     if($query) {
         return true;
     }
 }
 function buy_credits_update($userid, $status, $dayName) {
     global $db;
-    $query = $db->query("UPDATE credits SET c_status='$status', c_dayName='$dayName' WHERE customer_id = $userid");
-    if($query) {
-        return true;
+    if($status == "Reject"){
+        $query = $db->query("DELETE FROM credits WHERE customer_id = $userid");
+        if($query) {
+            return true;
+        }
+    }else{
+        $query = $db->query("UPDATE credits SET c_status='$status', c_dayName='$dayName' WHERE customer_id = $userid");
+        if($query) {
+            return true;
+        }
     }
+   
 }
 function buy_credits_status($userid) {
     global $db;
@@ -261,6 +296,12 @@ function buy_credits_status($userid) {
 function get_vehicles_details($id) {
     global $db;
     return $db->query("SELECT * FROM cars WHERE id = $id")->fetch_assoc();
+}
+
+function getUserTypeByID($id) {
+    global $db;
+    $res = $db->query("SELECT * FROM credits WHERE customer_id = $id AND c_status='Success' AND AccountType='Micro'");
+    return mysqli_num_rows($res);
 }
 
 function update_transactions($id,$reason) {
@@ -348,10 +389,17 @@ function update_transaction_status($id,$customer,$status) {
             if(!$mail->send()) {
                 echo "<script>swal ( 'Error!' ,  'Something went wrong...' ,  'error' )</script>";
             } else {
-                echo "<script>swal ( 'Success' ,  'Account has been successfuly registered. Please wait for approval by the administrator. Thank you.' ,  'success' )</script>";
+                if($status == "Approved"){
+                   return true;
+                }
+                else if($status == "Disapproved"){
+                    return true;
+                }else{
+                    return true;
+                }
             }
     
-            header('location: reservation-details.php?id='.$id.'&success=true&message='.urlencode('Transaction has been approved'));
+            // header('location: reservation-details.php?id='.$id.'&success=true&message='.urlencode('Transaction has been approved'));
         }
 
     }
@@ -366,14 +414,39 @@ function get_my_cars_count($owners_id) {
     $res = $db->query("SELECT * FROM cars WHERE accounts_id = $owners_id");
     return mysqli_num_rows($res);
 }
+function countMessages() {
+    global $db;
+    $res = $db->query("SELECT * FROM chat WHERE ChatStatus = 0 AND CustomerID != ''");
+    return mysqli_num_rows($res);
+}
+function showExistingCreditsAccount($id) {
+    global $db;
+    $res = $db->query("SELECT * FROM credits WHERE customer_id = $id");
+    return mysqli_num_rows($res);
+}
+function updateTheCustomerIDCredits($id) {
+    global $db;
+    return $db->query("UPDATE credits SET customer_id = 99999, subId=$id WHERE customer_id = $id");
+}
+function readMessages($id) {
+    global $db;
+    return $db->query("UPDATE chat SET ChatStatus=1 WHERE id='$id'");
+}
 function get_my_accountCreditsExpiration($owners_id) {
     global $db;
     $query1 = $db->query("SELECT DATEDIFF( CURDATE(), `DateCreated`) as creditsExpire FROM credits;");
     $result = mysqli_fetch_assoc($query1);
     if($result['creditsExpire'] >= 31){
         $query2 = $db->query("UPDATE credits SET `c_status`='Expired' where customer_id=$owners_id ");
+        $db->query("UPDATE credits SET `customer_id`='10000' where customer_id=$owners_id");
         return "expired";
     }
+}
+function checkMessageStatus($id) {
+    global $db;
+    $query1 = $db->query("SELECT ChatStatus FROM chat WHERE id = $id");
+    $result = mysqli_fetch_assoc($query1);
+    return $result['ChatStatus'];
 }
 function get_my_accountType($owners_id) {
     global $db;
@@ -428,7 +501,7 @@ function get_manufacturer_if_exists($id) {
     return $db->query("SELECT * FROM manufacturers WHERE id = $id")->num_rows;
 }
 
-function get_vehicles($manufacturers = null,$price_filter = null,$price_range = null,$fuel_type = null, $ownerType = null) {
+function get_vehicles($manufacturers = null,$price_filter = null,$price_range = null,$fuel_type = null, $ownerType = null, $car_location=null) {
     global $db;
     if($manufacturers == 'All') {
         $pre_condition1 = "";
@@ -453,6 +526,15 @@ function get_vehicles($manufacturers = null,$price_filter = null,$price_range = 
             $pre_condition2 = "WHERE user_type = '$ownerType'";
         } else {
             $pre_condition2 = " AND user_type = '$ownerType'";
+        }
+    }
+    if($car_location == 'All') {
+        $pre_condition2 = "";
+    } else {
+        if($manufacturers == 'All') {
+            $pre_condition2 = "WHERE location = '$car_location'";
+        } else {
+            $pre_condition2 = " AND location = '$car_location'";
         }
     }
 
@@ -556,31 +638,10 @@ function ownerLogin($username,$password) {
             $_SESSION['owners_id'] = $row['id'];
             header('location: dashboard.php');
         } else {
-             echo "<script src='https://unpkg.com/sweetalert/dist/sweetalert.min.js'></script>";
-        echo"
-        <style>
-        .swal-button {
-  padding: 7px 19px;
-  border-radius: 2px;
-  background-color: #FF8C00;
-  font-size: 12px;
-  border: 1px solid #3e549a;
-  text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.3);
-}
-        .swal-button:hover {
-    background-color: #FFD580;
-    text-shadow: 0px -1px 0px rgba(0, 0, 0, 0.3);
-}
-</style>
-        ";
-            $message = "Invalid Username or Password";
-            echo "<script type='text/javascript'>alert('$message');</script>";
-            echo "<script>swal ( 'Oops' ,  'Invalid Username or Password' ,  'error' )</script>";
+            return 1;
         }
     } else {
-        $message = "Account is still pending for Approval";
-        echo "<script type='text/javascript'>alert('$message');</script>";
-       echo "<script>swal ( 'Oops' ,  'Account is still pending for Approval' ,  'error' )</script>";
+        return 2;
     }
 }
 
@@ -593,12 +654,10 @@ function adminLogin($username,$password) {
             $_SESSION['admin_id'] = $row['id'];
             header('location: dashboard.php');
         } else {
-            $message = "Invalid Username or Password";
-            echo "<script type='text/javascript'>alert('$message');</script>";
+            return 1;
         }
     } else {
-        $message = "Invalid Username or Password";
-            echo "<script type='text/javascript'>alert('$message');</script>";
+        return 2;
     }
 }
 
@@ -633,6 +692,10 @@ function get_all_accounts_not_approved_list_all() {
 function get_all_accounts_req_to_macro() {
     global $db;
     return $db->query("SELECT * FROM accounts WHERE user_type = 'Micro' AND Upgrade=1");
+}
+function get_all_req_message() {
+    global $db;
+    return $db->query("SELECT * FROM chat WHERE CustomerID != '' ORDER BY date DESC");
 }
 function get_all_accounts_req_to_buy_credits_pendingStatus() {
     global $db;
@@ -708,7 +771,10 @@ function get_all_total_pendingbookings() {
     global $db;
     return $db->query("SELECT *,COUNT(id) AS pendingbookings FROM transactions WHERE owners_id = '".$_SESSION['owners_id']."' AND status = 'Pending'");
 }
-
+function get_all_total_paidbookings() {
+    global $db;
+    return $db->query("SELECT COUNT(id) AS paidbookings FROM transactions WHERE owners_id = '".$_SESSION['owners_id']."' AND status = 'Paid'");
+}
 
 function get_all_customers() {
     global $db;
@@ -814,8 +880,9 @@ function update_owner_status($id,$status) {
             echo "<script type='text/javascript'>alert('$message');</script>";
 
         } else {
-            $message = "Account status has been updated!";
-            echo "<script type='text/javascript'>alert('$message');</script>";
+            return true;
+            // $message = "Account status has been updated!";
+            // echo "<script type='text/javascript'>alert('$message');</script>";
         }
 
 
@@ -958,7 +1025,26 @@ function save_chat($message,$reference,$transaction_id,$customer_id) {
     }
 }
 
-function save_cars($manufacturer,$no_of_doors,$fuel_tank_capacity,$seating_capacity,$transmission_type,$gear_box,$model,$color,$year,$rate,$fuel_type,$rulesandregulations) {
+function save_chat_to_admin($message,$reference,$customer_id) {
+    global $db;
+    $query = $db->query("SELECT firstname, middlename,surname FROM accounts WHERE id='$customer_id'");
+    $result = mysqli_fetch_assoc($query);
+    $fullname = $result['firstname']." ".$result['middlename']." ".$result['surname'];
+    $msg            = $message;
+
+    $query = $db->query("INSERT INTO chat (reference,sender,receiver,message,position,CustomerID) VALUES ('$reference','$fullname','Administrator','$msg',1,'$customer_id')");
+    if($query) {
+        return true;
+        header('location: chat-owner.php?reference='.$reference.'&id='.$customer_id.'&success=true&message='.urlencode('Message has been sent'));
+    }else{
+        return false;
+    }
+}
+
+
+
+
+function save_cars($location,$manufacturer,$no_of_doors,$fuel_tank_capacity,$seating_capacity,$transmission_type,$gear_box,$model,$color,$year,$rate,$fuel_type,$rulesandregulations) {
     global $db;
     $accounts_id = $_SESSION['owners_id'];
     
@@ -967,7 +1053,7 @@ function save_cars($manufacturer,$no_of_doors,$fuel_tank_capacity,$seating_capac
         $imageName .= $_FILES['images']['name'][$key]."&";
     }
 
-    $query = $db->query("INSERT INTO cars (accounts_id,images,manufacturer,no_of_doors,fuel_tank_capacity,seating_capacity,transmission_type,gear_box,model,color,`year`,rate,fuel_type,rulesandregulations) VALUES ($accounts_id,'$imageName','$manufacturer','$no_of_doors','$fuel_tank_capacity','$seating_capacity','$transmission_type','$gear_box','$model','$color','$year','$rate','$fuel_type','$rulesandregulations')");
+    $query = $db->query("INSERT INTO cars (accounts_id,images,location,manufacturer,no_of_doors,fuel_tank_capacity,seating_capacity,transmission_type,gear_box,model,color,`year`,rate,fuel_type,rulesandregulations) VALUES ($accounts_id,'$imageName','$location','$manufacturer','$no_of_doors','$fuel_tank_capacity','$seating_capacity','$transmission_type','$gear_box','$model','$color','$year','$rate','$fuel_type','$rulesandregulations')");
     if($query) {
         foreach ($_FILES['images']['tmp_name'] as $key => $images) {
             $imageName = $_FILES['images']['name'][$key];
@@ -1046,6 +1132,21 @@ function save_owner_chat($message,$reference,$transaction_id,$owners_id) {
     }
 }
 
+function save_chat_to_admin_customer($message,$reference,$customer_id) {
+    global $db;
+    $query = $db->query("SELECT firstname, middlename,surname FROM accounts WHERE id='$customer_id'");
+    $result = mysqli_fetch_assoc($query);
+    $fullname = $result['firstname']." ".$result['middlename']." ".$result['surname'];
+    $msg            = $message;
+
+    $query = $db->query("INSERT INTO chat (reference,sender,receiver,message,position) VALUES ('$reference','Administrator','$fullname','$msg',0)");
+    if($query) {
+        return true;
+        header('location: chat-admin-customer.php?reference='.$reference.'&id='.$customer_id.'&success=true&message='.urlencode('Message has been sent'));
+    }else{
+        return false;
+    }
+}
 
 
 function get_transaction_details($id) {
@@ -1086,12 +1187,18 @@ function get_transactions() {
     global $db;
     return $db->query("SELECT * FROM transactions WHERE customer_id = ".$_SESSION['customer_id']);
 }
-
+function get_transactions2() {
+    global $db;
+    return $db->query("SELECT * FROM transactions WHERE owners_id = ".$_SESSION['customer_id']." AND status='Paid'");
+}
 function get_customer_transactions($owners_id) {
     global $db;
     return $db->query("SELECT * FROM transactions WHERE status = 'Approved' AND owners_id = '$owners_id'"); // validate if username already exist
 }
-
+function get_customer_Paidtransactions($owners_id) {
+    global $db;
+    return $db->query("SELECT * FROM transactions WHERE status = 'Paid' AND owners_id = '$owners_id'"); // validate if username already exist
+}
 function get_customer_pendingtransactions($owners_id) {
     global $db;
     return $db->query("SELECT * FROM transactions WHERE status = 'Pending' AND owners_id = '$owners_id'"); // validate if username already exist
@@ -1192,8 +1299,7 @@ function getMonthlyProfit($id){
     WHERE `owners_id`='$id' AND `status`='Paid' AND MONTH(date) = MONTH(CURRENT_DATE())
     AND YEAR(date) = YEAR(CURRENT_DATE())");
     $stmt = mysqli_fetch_assoc($sqlQ);
-    echo $stmt['monyhlyProfit'];
-                
+    echo $stmt['monyhlyProfit'];          
 }
 
 function getMonthlyProfit_admin(){
@@ -1201,6 +1307,60 @@ function getMonthlyProfit_admin(){
     $sqlQ = $db->query("SELECT SUM(`amount`)  as monyhlyProfit
     FROM credits WHERE (`c_status`='Success' OR `c_status`='Expired') AND MONTH(`DateCreated`) = MONTH(CURRENT_DATE()) AND YEAR(`DateCreated`) = YEAR(CURRENT_DATE())");
     $stmt = mysqli_fetch_assoc($sqlQ);
-    echo $stmt['monyhlyProfit'];
-                
+    echo $stmt['monyhlyProfit'];         
 }
+
+
+// PDFS
+
+function PDF_Admin_totalProfit(){
+    global $db;
+    $sqlQ = $db->query("SELECT * FROM credits WHERE c_status = 'Success' OR c_status='Expired'");
+   
+    while($stmt = mysqli_fetch_assoc($sqlQ)){
+        echo "<tr>
+        <td style='text-align:center'>$stmt[referenceNumber]</td>
+        <td style='text-align:center'>$stmt[amount]</td>
+        <td style='text-align:center'>$stmt[amount]</td>
+        <td style='text-align:center'>$stmt[DateCreated]</td>
+        <td style='text-align:center'>";
+        
+        if($stmt['customer_id'] == 99999){ echo $stmt['subId']; }
+        else{ echo $stmt['customer_id'];}
+        
+        echo "</td>
+        <td style='text-align:center'>$stmt[AccountType]</td>
+    </tr>";
+    }            
+}
+
+function PDF_Admin_totalProfitData(){
+    global $db;
+    $sqlQ = $db->query("SELECT SUM(amount) as Profit FROM credits WHERE c_status = 'Success' OR c_status='Expired'");
+    $stmt = mysqli_fetch_assoc($sqlQ);
+    if($stmt['Profit'] == ""){
+        echo "₱ 0";
+    }else{
+        echo "₱ ". number_format($stmt['Profit'],2);
+    }
+              
+}
+
+function PDF_Owner_totalProfit(){
+    global $db;
+    $sqlQ = $db->query("SELECT * FROM transactions WHERE owners_id = ".$_SESSION['customer_id']." AND status='Paid'");
+   
+    while($stmt = mysqli_fetch_assoc($sqlQ)){
+        echo "<tr>
+        <td style='text-align:center'>$stmt[cars_id]</td>
+        <td style='text-align:center'>$stmt[destination]</td>
+        <td style='text-align:center'>$stmt[from]</td>
+        <td style='text-align:center'>$stmt[to]</td>
+        <td style='text-align:center'>$stmt[rate_per_day]</td>
+        <td style='text-align:center'>$stmt[days_rented]</td>
+        <td style='text-align:center'>$stmt[total]</td>
+        <td style='text-align:center'>$stmt[reference]</td>
+    </tr>";
+    }            
+}
+

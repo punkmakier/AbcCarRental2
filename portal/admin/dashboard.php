@@ -8,7 +8,6 @@ if(isset($_GET['logout']) == 'true') {
     unset($_SESSION['owners_id']);
     header('location:index.php');
 }
-
 ?>
 <!DOCTYPE html>
 <html class="no-js css-menubar" lang="en">
@@ -21,6 +20,7 @@ if(isset($_GET['logout']) == 'true') {
     <meta name="author" content="">
 
     <title>Portal - Admin </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <link rel="apple-touch-icon" href="../assets/images/apple-touch-icon.png">
     <link rel="shortcut icon" href="../assets/images/adl-icon.ico">
@@ -164,6 +164,12 @@ if(isset($_GET['logout']) == 'true') {
                                 <span class="site-menu-title">Edit Page</span>
                             </a>
                         </li>
+                        <li class="dropdown site-menu-item position-relative">
+                            <div style="position: absolute; border-radius: 50%; background-color: red; color: #fff; width: 20px; height: 20px; text-align: center; right: 0;"><?=countMessages(); ?></div>
+                            <a data-toggle="dropdown" href="messages.php">
+                                <span class="site-menu-title">Messages</span>
+                            </a>
+                        </li>
 
                     </ul>
                 </div>
@@ -183,10 +189,11 @@ if(isset($_GET['logout']) == 'true') {
                     <div class="row">
                         <div class="col-lg-4" >
                             <div class="card" style="background-color: #3e8ef7;">
-                                <div class="card-body">
+                                <div class="card-body position-relative">
                                     <h2 class="text-white"><?php $i=1; foreach(get_all_total_profit_buycredits() as $totalprofit) { echo "₱ ".number_format($totalprofit['totalprofitcredits'],2); } ?></h2>
                                     <h4 class="text-white">Total Profit</h4>
-                                 
+                                    <a href="../totalProfits.php" target="blank" style="color: #fff; position: absolute; right: 5%; top: 10%;"><i class="fa-solid fa-print" style="font-size: 1.3rem;"></i></a>
+
                                 </div>
                             </div>
                         </div>

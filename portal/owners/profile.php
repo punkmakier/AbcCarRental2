@@ -462,7 +462,9 @@ error_reporting(0);
                                 <div class="form-group mb-3">
                                     <label for="">Amount</label>
                                     <input type="text" name="amountCredits" class="form-control" value="<?= $rows['Upgrade'] == 2 ?  "1000" :  "500" ?>" readonly>
-
+                                </div>
+                                <div class="form-group mb-3">
+                                    <input type="hidden" name="userType" class="form-control" value="<?= $rows['user_type'] ?>" readonly>
                                 </div>
                                 <div class="form-group mb-3">
                                     <label for="">Upload Receipt</label>
@@ -584,15 +586,17 @@ error_reporting(0);
                 e.preventDefault();
                 var formData = new FormData(this);
                 
+
                 swal({
               title: "Are you sure?",
               text:  "Do you want to buy credits?",
               icon: "warning",
               buttons: true,
               dangerMode: true,
-                })
-                .then((isOkay) => {
-                    $.ajax({
+          })
+          .then((isOkay) => {
+              if (isOkay){
+                $.ajax({
                     type: "POST",
                     url: "buycredits.php",
                     data: formData,
@@ -609,17 +613,32 @@ error_reporting(0);
                                window.location.reload();
                             });
                         }
-                        
+                     
                     },
                     cache: false,
                     contentType: false,
                     processData: false
+
+
                     })
-                });
+            }
 
-
-
+          });
+          
                
+            })
+
+            $(document).ready(function(){
+                $.ajax({
+                    type: "POST",
+                    url: "buycredits.php",
+                    data: {checkUtype : <?= $_SESSION['owners_id'] ?>},
+                    success: function(response){
+                        if(response == 1){
+                            $("#UpgradeMacro").hide();
+                        }
+                    }
+                })
             })
         
     </script>

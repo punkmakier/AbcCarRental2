@@ -56,8 +56,8 @@
     </div><!-- .access -->
     <div class="member">
         <?php if($_SESSION['customer_id'] == 0) { ?>
-            <span class="sign_in"><a class="sign_button tab_link_button" href="#sign_in" title="">Sign in</a></span>
-            <span class="register"><a class="sign_button tab_link_button" href="#register" title="">Register</a></span>
+            <span class="sign_in" id="signInbtn"><a class="sign_button tab_link_button" href="#sign_in" title="">Sign in</a></span>
+            <span class="register" id="signUpbtn"><a class="sign_button tab_link_button" href="#register" title="">Register</a></span>
         <?php } else { ?>
             <?php 
                 $user = get_account_details($_SESSION['customer_id']);

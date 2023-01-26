@@ -149,6 +149,12 @@ if(isset($_GET['logout']) == 'true') {
                                 <span class="site-menu-title">My Reservation</span>
                             </a>
                         </li>
+                        <li class="dropdown site-menu-item float-right">
+                            <form action="generateReferenceChat.php" method="POST">
+                                <input type="hidden" name="generateRefChat" value="1">
+                                <button type="submit" class="btn">Report</button>
+                            </form>
+                        </li>
                         
                     </ul>
                 </div>

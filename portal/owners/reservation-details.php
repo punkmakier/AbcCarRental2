@@ -33,15 +33,7 @@
         header('location:index.php');
     }
 
-    if(@$_GET['action'] == 'approve') {
-        update_transaction_status($_GET['id'],$_GET['customer'],'Approved');
-    }
-    if(@$_GET['action'] == 'disapprove') {
-        update_transaction_status($_GET['id'],$_GET['customer'],'Disapproved');
-    }
-    if(@$_GET['action'] == 'paid') {
-        update_transaction_status($_GET['id'],$_GET['customer'],'Paid');
-    }
+   
 ?>
 <!DOCTYPE html>
 <html class="no-js css-menubar" lang="en">
@@ -72,6 +64,7 @@
     <link rel="stylesheet" href="../assets/vendor/flag-icon-css/flag-icon.css">
 
     <link rel="stylesheet" href="../assets/vendor/datatables.net-bs4/dataTables.bootstrap4.css">
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
     <!-- Sweet JS Alerts -->
@@ -484,3 +477,66 @@
 </body>
 
 </html>
+
+<?php
+
+ if(@$_GET['action'] == 'approve') {
+        if(update_transaction_status($_GET['id'],$_GET['customer'],'Approved')){
+            echo "<script>
+            swal({
+                title: 'Success',
+                text:  'You approved this car reservation!',
+                icon: 'success',
+                button: true,
+                dangerMode: true,
+            })
+            .then((isOkay) => {
+                if (isOkay){
+                    window.location.href='reservations.php';
+              }
+            });
+            
+            </script>";
+        }
+    }
+    if(@$_GET['action'] == 'disapprove') {
+        if(update_transaction_status($_GET['id'],$_GET['customer'],'Disapproved')){
+            echo "<script>
+            swal({
+                title: 'Success',
+                text:  'You disapproved this car reservation!',
+                icon: 'success',
+                button: true,
+                dangerMode: true,
+            })
+            .then((isOkay) => {
+                if (isOkay){
+                    window.location.href='reservations.php';
+              }
+            });
+            
+            </script>";
+        }
+    }
+    if(@$_GET['action'] == 'paid') {
+        if(update_transaction_status($_GET['id'],$_GET['customer'],'Paid')){
+            echo "<script>
+            swal({
+                title: 'Success',
+                text:  'You mark up this transaction as PAID',
+                icon: 'success',
+                button: true,
+                dangerMode: true,
+            })
+            .then((isOkay) => {
+                if (isOkay){
+                    window.location.href='reservations.php';
+              }
+            });
+            
+            </script>";
+        }
+    }
+
+
+?>

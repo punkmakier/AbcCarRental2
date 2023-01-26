@@ -25,16 +25,16 @@ if(isset($_POST['forgotPass'])){
 }
 ?>
 <div id="overlay_block"></div>
-    <div class="admin-form-content sign_register_block">
-        <div class="admin-form-block">
-            <form class="main-form admin-form" method="POST" novalidate>
-                <div class="main_form_navigation">
+    <div class="admin-form-content sign_register_block" >
+        <div class="admin-form-block" >
+            <form class="main-form admin-form" method="POST" novalidate >
+                <div class="main_form_navigation" >
                     <div id="tab_register" class="title-form back"><span class="register"><a href="#register"
                                 title="">Register</a></span></div>
                     <div id="tab_sign_in" class="title-form current"><span class="sign_in"><a href="#sign_in"
                                 title="">Sign In</a></span></div>
                 </div>
-                <div id="tab_sign_in_content" class="content-form">
+                <div id="tab_sign_in_content" class="content-form" style="display: none;">
                     <div>
                         <input id="register_name" class="input_placeholder" placeholder="Username" type="text" name="login_username" required/>
                     </div>
@@ -49,7 +49,7 @@ if(isset($_POST['forgotPass'])){
                 </div>
             </form>
             <form class="main-form admin-form" method="POST" enctype="multipart/form-data" >
-                <div id="tab_register_content" class="content-form hidden">
+                <div id="tab_register_content" class="content-form" style="display: none;">
 
 
                     <div>
@@ -183,6 +183,28 @@ if(isset($_POST['forgotPass'])){
 
 <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
     <script>
+
+        $("#tab_sign_in").click(function(){
+            $("#tab_sign_in_content").show();
+            $("#tab_register_content").hide();
+            
+        })
+        $("#signInbtn").click(function(){
+            $("#tab_sign_in_content").show();
+            $("#tab_register_content").hide();
+        })
+        $("#tab_register").click(function(){
+            $("#tab_sign_in_content").hide();
+            $("#tab_register_content").show();
+            
+        })
+        $("#signUpbtn").click(function(){
+            $("#tab_sign_in_content").hide();
+            $("#tab_register_content").show();
+        })
+        
+
+
         $('.continue').click(function(){
             $('.termsandconditions').addClass('termsandconditions_show')
 

@@ -1,11 +1,13 @@
 <?php include 'config/functions.php';?>
 <?php 
+error_reporting(0);
 
 if (isset($_POST['btnTransaction2'])) {
 	$_SESSION['rate'] = $_POST['rate'];
 	$_SESSION['total'] = $_POST['total'];
 	$_SESSION['days'] = $_POST['days'];
 }
+
 if(isset($_POST['search'])) {
 	global $db;
 	$manufacturers = post('manufacturers');
@@ -13,7 +15,8 @@ if(isset($_POST['search'])) {
 	$price_range   = post('price_range');
 	$fuel_type 	   = post('fuel_type');
 	$user_type 	   = post('user_type');
-	$data = get_vehicles($manufacturers,$price_filter,$price_range,$fuel_type,$user_type);
+	$car_location = post('car_location');
+	$data = get_vehicles($manufacturers,$price_filter,$price_range,$fuel_type,$user_type,$car_location);
 } else {
 	$manufacturers = null;
 	$price_filter  = null;
@@ -67,7 +70,7 @@ if($_GET['step'] == 4) {
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="css/jquery-ui.css" type="text/css" media="all" />
-	<link rel="stylesheet" href="css/style.css" type="text/css" media="all" />
+	<link rel="stylesheet" href="css/style.css?v=1" type="text/css" media="all" />
 	<link rel="stylesheet" href="css/jquery.slider.min.css" />
 	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 	<link href='https://fonts.googleapis.com/css?family=Lato:300,400|Montserrat:700' rel='stylesheet' type='text/css'>
@@ -297,6 +300,82 @@ if($_GET['step'] == 4) {
 									</option>
 								</select>
 							</div>
+
+							<h4>Location</h4>
+							<div style="padding:20px">
+								<select name="car_location" class="customize">
+									<option value="All">All</option>
+									<option value="Bacoor"
+										<?= $car_location !== null ? $car_location == 'Bacoor' ? 'selected' : '' : ''?>>
+										Bacoor</option>
+									    <option value="Cavite City"
+										<?= $car_location !== null ? $car_location == 'Cavite City' ? 'selected' : '' : ''?>>
+										Cavite City</option>
+										<option value="Dasmariñas"
+										<?= $car_location !== null ? $car_location == 'Dasmariñas' ? 'selected' : '' : ''?>>
+										Dasmariñas</option>
+										<option value="General Trias"
+										<?= $car_location !== null ? $car_location == 'General Trias' ? 'selected' : '' : ''?>>
+										General Trias</option>
+										<option value="Imus"
+										<?= $car_location !== null ? $car_location == 'Imus' ? 'selected' : '' : ''?>>
+										Imus</option>
+										<option value="Tagaytay"
+										<?= $car_location !== null ? $car_location == 'Tagaytay' ? 'selected' : '' : ''?>>
+										Tagaytay</option>
+										<option value="Trece Martires"
+										<?= $car_location !== null ? $car_location == 'Trece Martires' ? 'selected' : '' : ''?>>
+										Trece Martires</option>
+										<option value="Alfonso"
+										<?= $car_location !== null ? $car_location == 'Alfonso' ? 'selected' : '' : ''?>>
+										Alfonso</option>
+										<option value="Amadeo"
+										<?= $car_location !== null ? $car_location == 'Amadeo' ? 'selected' : '' : ''?>>
+										Amadeo</option>
+										<option value="Carmona"
+										<?= $car_location !== null ? $car_location == 'Carmona' ? 'selected' : '' : ''?>>
+										Carmona</option>
+										<option value="General Emilio Aguinaldo"
+										<?= $car_location !== null ? $car_location == 'General Emilio Aguinaldo' ? 'selected' : '' : ''?>>
+										General Emilio Aguinaldo</option>
+										<option value="General Mariano Alvarez"
+										<?= $car_location !== null ? $car_location == 'General Mariano Alvarez' ? 'selected' : '' : ''?>>
+										General Mariano Alvarez</option>
+										<option value="Indang"
+										<?= $car_location !== null ? $car_location == 'Indang' ? 'selected' : '' : ''?>>
+										Indang</option>
+										<option value="Kawit"
+										<?= $car_location !== null ? $car_location == 'Kawit' ? 'selected' : '' : ''?>>
+										Kawit</option>
+										<option value="Magallanes"
+										<?= $car_location !== null ? $car_location == 'Magallanes' ? 'selected' : '' : ''?>>
+										Magallanes</option>
+										<option value="Maragondon"
+										<?= $car_location !== null ? $car_location == 'Maragondon' ? 'selected' : '' : ''?>>
+										Maragondon</option>
+									    <option value="Mendez"
+										<?= $car_location !== null ? $car_location == 'Mendez' ? 'selected' : '' : ''?>>
+										Mendez</option>
+										<option value="Naic"
+										<?= $car_location !== null ? $car_location == 'Naic' ? 'selected' : '' : ''?>>
+										Naic</option>
+										<option value="Noveleta"
+										<?= $car_location !== null ? $car_location == 'Noveleta' ? 'selected' : '' : ''?>>
+										Noveleta</option>
+										<option value="Rosario"
+										<?= $car_location !== null ? $car_location == 'Rosario' ? 'selected' : '' : ''?>>
+										Rosario</option>
+										<option value="Silang"
+										<?= $car_location !== null ? $car_location == 'Silang' ? 'selected' : '' : ''?>>
+										Silang</option>
+										<option value="Tanza"
+										<?= $car_location !== null ? $car_location == 'Tanza' ? 'selected' : '' : ''?>>
+										Tanza</option>
+										<option value="Ternate"
+										<?= $car_location !== null ? $car_location == 'Ternate' ? 'selected' : '' : ''?>>
+										Ternate</option>
+								</select>
+							</div>
 						
 
 							<div style="padding:20px;margin-top:-20px">
@@ -309,6 +388,7 @@ if($_GET['step'] == 4) {
 				<?php } elseif($_GET['step'] == 2) {  ?>
 				<?php 
 					$cars_id 	 = post('cars_id');
+					$_SESSION['cars_id'] = $cars_id;
 					$vehicleData = get_vehicles_details($cars_id);
 				?>
 				<?php $user    = get_account_details($vehicleData['accounts_id']);?>
@@ -328,7 +408,7 @@ if($_GET['step'] == 4) {
 						<img src="<?=$vehicleData['images'] == '' ? 'https://s7d1.scene7.com/is/image/hyundai/compare-vehicle-1225x619?wid=276&hei=156&fmt=png-alpha' : 'images/vehicles/'.$ShowImages[3]?>"
 						style="width:30%;cursor: pointer;" alt="" class='zoomable'/>
 						<h3 class="widget-title">
-							<label style="margin-left:-5px">Car Details</label>
+							<label style="margin-left:-5px">Car Detaiasdasdls</label>
 						</h3>
 						<div class="widget-content main-block product-widget-mini">
 							<div class="product-img">
@@ -338,6 +418,7 @@ if($_GET['step'] == 4) {
 									<div><?=$vehicleData['model']?></div>
 								</div>
 								<div class="features">
+									<p>Location: <?=$vehicleData['location']?></p>
 									<p>Manufacturer: <?=$vehicleData['manufacturer']?></p>
 									<p>Year: <?=$vehicleData['year']?></p>
 									<p>Model: <?=$vehicleData['model']?></p>
@@ -480,7 +561,7 @@ if($_GET['step'] == 4) {
 										<?php if($_SESSION['customer_id'] == 0) { ?>
 											<span class="sign_in"><a class="tab_link_button" style="font-size:14px;text-transform:uppercase" href="#sign_in" title="">Reserve</a></span>
 										<?php } else { ?>
-											<input class="continue_button blue_button" onclick="selectThis(<?=$vehicles['cars_id']?>)" type="submit" value="Reserve" />
+											<input class="continue_button blue_button selected_cars" onclick="selectThis(<?=$vehicles['cars_id']?>)" type="submit" value="Reserve"/>
 										<?php } ?>
 									</div>
 
@@ -547,7 +628,8 @@ if($_GET['step'] == 4) {
 							</div>
 						</div>
 					</div>
-					<div class="next_page">
+					<div class="next_page" style="text-align: right;">
+						<input class="blue_button" id="backToStep1" value="Back" style="color: #fff; width: 20%; cursor: pointer; text-align: center; font-weight: 900;" />
 						<input class="continue_button blue_button" name="btnTransaction2" type="submit"
 							value="Continue to Transaction" />
 					</div>
@@ -601,11 +683,14 @@ if($_GET['step'] == 4) {
 							</div>
 						</div>
 					</div>
-					<div class="next_page">
-						<input class="continue_button blue_button" name="btnTransaction" type="submit"
+					<div class="next_page" style="text-align: right;">
+					<input class="blue_button" id="backToStep2" value="Back" style="color: #fff; width: 20%; cursor: pointer; text-align: center; font-weight: 900;" />
+					<input class="continue_button blue_button" name="btnTransaction" type="submit"
 							value="Complete" />
+					</form>
+						
 					</div>
-				</form>
+				
 				<?php } else { ?>
 					<div id="content" class="">
 						<div class="widget">
@@ -694,7 +779,9 @@ $to = json_encode($to);
 		function selectThis(id) {
 			$('#cars_id').val(id);
 			$('#formStep').submit();
+			
 		}
+
 
 		<?php if ($_GET['step'] == 2) { ?>
 			var date = new Date();
@@ -815,6 +902,16 @@ $('.totalrate').text(new Intl.NumberFormat('en-IN', {
     'opacity': 1
   }, 300);
 });
+
+	$("#backToStep1").click(function(){
+		window.location.href="vehicles.php?step=1";
+	})
+	$("#backToStep2").click(function(){
+				window.location.href="vehicles.php?step=2";
+
+    
+	})
+	
 	</script>
 </body>
 

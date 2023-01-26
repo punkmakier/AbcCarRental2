@@ -2,11 +2,7 @@
 <?php 
     $rows = get_account_details($_GET['id']);
 
-    if(isset($_POST['saveChanges'])) {
-        $id     = $_GET['id'];
-        $status = post('status');
-        update_owner_status($id,$status);
-    }
+    
 
     if(isset($_GET['logout']) == 'true') {
         unset($_SESSION['owners_id']);
@@ -381,3 +377,29 @@
 </body>
 
 </html>
+
+<?php
+if(isset($_POST['saveChanges'])) {
+    $id     = $_GET['id'];
+    $status = post('status');
+    if(update_owner_status($id,$status)){
+        echo "<script>
+            swal({
+                title: 'Success',
+                text:  'User has been updated!',
+                icon: 'success',
+                button: true,
+                dangerMode: true,
+            })
+            .then((isOkay) => {
+                if (isOkay){
+                    window.location.href='notapprovedaccounts.php';
+              }
+            });
+            
+            </script>";
+    }
+}
+
+
+?>

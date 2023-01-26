@@ -7,7 +7,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" href="css/jquery-ui.css" type="text/css" media="all" />
-		<link rel="stylesheet" href="css/style.css" type="text/css" media="all" />
+		<link rel="stylesheet" href="css/style.css?v=8" type="text/css" media="all" />
 		<!--[if IE]>
 		<script type="text/javascript" src="js/html5.js"></script>
 		<link rel="stylesheet" id="stylesheet-ie" href="css/css_ie.css" type="text/css" media="all" />

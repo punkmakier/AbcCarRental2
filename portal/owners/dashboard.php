@@ -31,7 +31,7 @@ if(isset($_GET['logout']) == 'true') {
     <meta name="author" content="">
 
     <title>Portal - Owner</title>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="apple-touch-icon" href="../assets/images/apple-touch-icon.png">
     <link rel="shortcut icon" href="../assets/images/adl-icon.ico">
 
@@ -162,7 +162,12 @@ if(isset($_GET['logout']) == 'true') {
                                 <span class="site-menu-title">Reservations</span>
                             </a>
                         </li>
-
+                        <li class="dropdown site-menu-item float-right">
+                            <form action="generateReferenceChat.php" method="POST">
+                                <input type="hidden" name="generateRefChat" value="1">
+                                <button type="submit" class="btn">Report</button>
+                            </form>
+                        </li>
                
                     </ul>
                 </div>
@@ -182,10 +187,10 @@ if(isset($_GET['logout']) == 'true') {
                     <div class="row">
                         <div class="col-lg-4" >
                             <div class="card" style="background-color: #465985;">
-                                <div class="card-body">
+                                <div class="card-body position-relative">
                                     <h2 class="text-white"><?php $i=1; foreach(get_all_total_profit() as $totalprofit) { echo "₱ ".number_format($totalprofit['totalprofit'],2); } ?></h2>
                                     <h4 class="text-white">Total Profit</h4>
-                                 
+                                    <a href="../totalOwnerProfits.php?ownerId=<?= $_SESSION['owners_id'] ?>" target="blank" style="color: #fff; position: absolute; right: 5%; top: 10%;"><i class="fa-solid fa-print" style="font-size: 1.3rem;"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -215,6 +220,14 @@ if(isset($_GET['logout']) == 'true') {
                                 </div>
                             </div>
                         </div>
+                        <div class="col-lg-4" data-toggle="modal" data-target="#paidbookingsModal" style="cursor: pointer;">
+                            <div class="card" style="background-color: #4CC6BF;">
+                                <div class="card-body">
+                                   <h2 class="text-white"><?php $i=1; foreach(get_all_total_paidbookings() as $totalbookings) { echo $totalbookings['paidbookings']; } ?></h2>
+                                    <h4 class="text-white">Paid Bookings</h4>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -234,6 +247,10 @@ if(isset($_GET['logout']) == 'true') {
             
         </div>
     </div>
+
+    
+
+
     <!-- End Page -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
@@ -242,6 +259,7 @@ if(isset($_GET['logout']) == 'true') {
         <div class="site-footer-legal">© <?=date('Y')?> <a href="javascript:void(0)">ABC Car Rental Inc.</a></div>
     </footer>
     <!-- Core  -->
+    
     <script>
    var options = {
           series: [
@@ -364,6 +382,7 @@ if(isset($_GET['logout']) == 'true') {
     <script src="../assets/js/Plugin/slidepanel.js"></script>
     <script src="../assets/js/Plugin/switchery.js"></script>
 
+
     <script>
         (function (document, window, $) {
             'use strict';
@@ -375,9 +394,54 @@ if(isset($_GET['logout']) == 'true') {
         })(document, window, jQuery);
     </script>
 
-</body>
 
-</html>
+<div class="modal fade" id="paidbookingsModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel">Paid Bookings</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body table-responsive">
+        <table class="table">
+            <tr>
+                <th>Customer</th>
+                <th>Destination</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Rate per Day</th>
+                <th>Days</th>
+                <th>Total</th>
+                <th>Reference</th>
+                <th>Status</th>
+            </tr>
+                <?php foreach(get_customer_Paidtransactions($_SESSION['owners_id']) as $row) { ?>
+                    <?php $rdata = get_account_details($row['customer_id']);?>
+                    <tr>
+                        <td><?php echo $rdata['firstname'].' '.$rdata['middlename'].' '.$rdata['surname']?></td>
+                        <td><?php echo $row['destination']?></td>
+                        <td><?php echo $row['from']?></td>
+                        <td><?php echo $row['to']?></td>
+                        <td>₱<?php echo number_format($row['rate_per_day'],2)?></td>
+                        <td><?php echo $row['days_rented']?></td>
+                        <td>₱<?php echo number_format($row['total'],2)?></td>
+                        <td><?php echo $row['reference']?></td>
+                        <td><?php echo $row['status']?></td>
+                    </tr>
+                <?php } ?>
+            
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
 <div class="modal fade" id="vehicle" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
   <div class="modal-dialog">
@@ -419,7 +483,7 @@ if(isset($_GET['logout']) == 'true') {
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title" id="myModalLabel">Bookings</h4>
+        <h4 class="modal-title" id="myModalLabel">Completed Bookings</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -468,7 +532,7 @@ if(isset($_GET['logout']) == 'true') {
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title" id="myModalLabel">Bookings</h4>
+        <h4 class="modal-title" id="myModalLabel">Pending Bookings</h4>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -486,7 +550,7 @@ if(isset($_GET['logout']) == 'true') {
                 <th>Reference</th>
                 <th>Status</th>
             </tr>
-                <?php foreach(get_customer_pendingtransactions($_SESSION['owners_id']) as $row) { ?>
+                <?php foreach(get_all_total_pendingbookings($_SESSION['owners_id']) as $row) { ?>
                     <?php $rdata = get_account_details($row['customer_id']);?>
                     <tr>
                         <td><?php echo $rdata['firstname'].' '.$rdata['middlename'].' '.$rdata['surname']?></td>
@@ -509,5 +573,14 @@ if(isset($_GET['logout']) == 'true') {
     </div>
   </div>
 </div>
+
+
+
+
+
+
+</body>
+
+</html>
 
 

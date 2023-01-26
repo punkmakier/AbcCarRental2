@@ -20,6 +20,7 @@ if(isset($_GET['logout']) == 'true') {
 if(isset($_POST['btnCreate']) ){
     
 
+    $location       = $_POST['location'];
     $manufacturer       = $_POST['manufacturer'];
     $no_of_doors        = $_POST['no_of_doors'];
     $fuel_tank_capacity = $_POST['fuel_tank_capacity'];
@@ -33,7 +34,7 @@ if(isset($_POST['btnCreate']) ){
     $rulesandregulations= $_POST['rulesandregulations'];
     $fuel_type          = $_POST['fuel_type'];
 
-    if(save_cars($manufacturer,$no_of_doors,$fuel_tank_capacity,$seating_capacity,$transmission_type,$gear_box,$model,$color,$year,$rate,$fuel_type,$rulesandregulations)){
+    if(save_cars($location,$manufacturer,$no_of_doors,$fuel_tank_capacity,$seating_capacity,$transmission_type,$gear_box,$model,$color,$year,$rate,$fuel_type,$rulesandregulations)){
         header("Location: my-vehicles.php?action=add&status=success");
     }else{
         header("Location: my-vehicles.php?action=add&status=error");
@@ -238,7 +239,37 @@ if(isset($_POST['btnCreate']) ){
                                     <input type="file" class="form-control" name="images[]" multiple required>
                                 </div>
                             </div>
-
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="">Location</label>
+                                    <select name="location" class="form-control" id="">
+                                        <option value="Bacoor">Bacoor</option>
+                                        <option value="Cavite City">Cavite City</option>
+                                        <option value="Dasmariñas">Dasmariñas</option>
+                                        <option value="General Trias">General Trias</option>
+                                        <option value="Imus">Imus</option>
+                                        <option value="Tagaytay">Tagaytay</option>
+                                        <option value="Trece Martires">Trece Martires</option>
+                                        <option value="Alfonso">Alfonso</option>
+                                        <option value="Amadeo">Amadeo</option>
+                                        <option value="Carmona">Carmona</option>
+                                        <option value="General Emilio Aguinaldo">General Emilio Aguinaldo</option>
+                                        <option value="General Mariano Alvarez">General Mariano Alvarez</option>
+                                        <option value="Indang">Indang</option>
+                                        <option value="Kawit">Kawit</option>
+                                        <option value="Magallanes">Magallanes</option>
+                                        <option value="Maragondon">Maragondon</option>
+                                        <option value="Mendez">Mendez</option>
+                                        <option value=""></option>
+                                        <option value="Naic">Naic</option>
+                                        <option value="Noveleta">Noveleta</option>
+                                        <option value="Rosario">Rosario</option>
+                                        <option value="Silang">Silang</option>
+                                        <option value="Tanza">Tanza</option>
+                                        <option value="Ternate">Ternate</option>
+                                    </select>
+                                </div>
+                            </div>
                             <div class="col-12">
                                 <div class="form-group">
                                     <label for="">Manufacturer</label>

@@ -1,6 +1,9 @@
 <?php include '../../config/functions.php'?>
 <?php 
+
+error_reporting(0);
     $rows = get_account_details($_GET['id']);
+    $rows1 = getProofCredits($_GET['id']);
 
     if(isset($_POST['saveChanges'])) {
         $id     = $_GET['id'];
@@ -163,10 +166,24 @@
 
                                 <div class="col-12">
                                     <div class="form-group">
-                                        <img src="<?=empty($rows['requirement']) ? 'https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg' : '../../images/permit/'.$rows['requirement']?>"
-                                            style="width:100%" alt="" />
+                                        <?php 
+                                            if(isset($_GET['Upgrade'])){
+                                                echo "<img src=" ?><?=empty($rows['requirement']) ? 'https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg' : '../../images/permit/'.$rows['requirement']?> <?php echo "
+                                                style='width:100%' />";
+                                            }
+                                            else if(isset($_GET['subscription'])){
+                                                if($rows1 == ""){
+                                                    echo "<img src='https://upload.wikimedia.org/wikipedia/commons/1/14/No_Image_Available.jpg'style='width:100%' >";
+                                                }else{
+                                                    echo "<img src='../../images/creditsproof/".$rows1."' style='width:100%' >";
+                                                }
+                                            }
+                                            
+                                          
+                                        ?>
+
                                     </div>
-                                        <a href="../../images/permit/<?=$rows['requirement']?>" class="btn btn-primary btn-block btn-sm" download>Download</a>
+                                        <a href="../../images/creditsproof/<?=$rows1?>" class="btn btn-primary btn-block btn-sm" download>Download</a>
                                 </div>
 
 
@@ -436,7 +453,7 @@
 
             swal({
               title: "Confirmation needed",
-              text:  "Do you want to approve this request?",
+              text:  "Do you want to take this action?",
               icon: "warning",
               buttons: true,
               dangerMode: true,

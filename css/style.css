@@ -182,7 +182,9 @@ input.blue_button {
 	-moz-box-shadow: 0 1px 2px 0 #7cb7f5 inset, inset 0 -15px 15px 0 #2f82ec;
 	-webkit-box-shadow: 0 1px 2px 0 #7cb7f5 inset, inset 0 -15px 15px 0 #2f82ec;
 	box-shadow: 0 1px 2px 0 #7cb7f5 inset, inset 0 -15px 15px 0 #2f82ec;
+	
 }
+
 input.green_button:hover {
 	background: #5dcc37;
 	-moz-box-shadow: 0 1px 2px 0 #82d569 inset, inset 0 -15px 15px 0 #47bf25;

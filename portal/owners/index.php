@@ -1,12 +1,5 @@
 <?php include '../../config/functions.php'?>
-<?php 
-    if(isset($_POST['btnSignIn'])) {
-        global $db;
-        $username = post('username');
-        $password = post('password');
-        ownerLogin($username,$password);
-    }
-?>
+
 <!DOCTYPE html>
 <html class="no-js css-menubar" lang="en">
   <head>
@@ -34,7 +27,7 @@
     <link rel="stylesheet" href="../assets/vendor/slidepanel/slidePanel.css">
     <link rel="stylesheet" href="../assets/vendor/flag-icon-css/flag-icon.css">
         <link rel="stylesheet" href="../assets/examples/css/pages/login-v2.css">
-    
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <!-- Fonts -->
     <link rel="stylesheet" href="../assets/fonts/web-icons/web-icons.min.css">
@@ -149,3 +142,27 @@
     
   </body>
 </html>
+<?php 
+    if(isset($_POST['btnSignIn'])) {
+        global $db;
+        $username = post('username');
+        $password = post('password');
+        if(ownerLogin($username,$password) == 1){
+          echo "<script>
+          Swal.fire(
+            'Failed!',
+            'Invalid Username or Password',
+            'error'
+          )
+          </script>";
+        }else{
+          echo "<script>
+          Swal.fire(
+            'Failed!',
+            'Account is still pending for Approval',
+            'error'
+          )
+          </script>";
+        }
+    }
+?>
